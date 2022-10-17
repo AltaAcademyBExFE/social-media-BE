@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"sosmed/config"
+	"sosmed/features/post/repository"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/driver/mysql"
@@ -26,6 +27,6 @@ func InitDB(c *config.AppConfig) *gorm.DB {
 	return db
 }
 
-func migrateDB(db *gorm.DB) {
-
+func MigrateDB(db *gorm.DB) {
+	db.AutoMigrate(&repository.Post{})
 }
