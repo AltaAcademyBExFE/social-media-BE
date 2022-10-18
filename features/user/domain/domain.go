@@ -7,6 +7,7 @@ type UserCore struct {
 	Phone    string
 	Address  string
 	Password string
+	Token    string
 }
 
 type Repository interface {

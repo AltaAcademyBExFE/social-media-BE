@@ -17,8 +17,8 @@ func New(repo domain.Repository) domain.Service {
 	return &userService{qry: repo}
 }
 
-func (us *userService) MyProfile() (domain.UserCore, error) {
-	res, err := us.qry.GetMyUser()
+func (us *userService) MyProfile(userID uint) (domain.UserCore, error) {
+	res, err := us.qry.GetMyUser(userID)
 	if err != nil {
 		if strings.Contains(err.Error(), "table") {
 			return domain.UserCore{}, errors.New("database error")
@@ -29,14 +29,24 @@ func (us *userService) MyProfile() (domain.UserCore, error) {
 	return res, nil
 }
 
-func (us *userService) UpdateProfile(updatedUser domain.UserCore) (domain.UserCore, error) {
-	res, err := us.qry.Update(updatedUser)
+func (us *userService) UpdateProfile(updatedUser domain.UserCore, userID uint) (domain.UserCore, error) {
+	if updatedUser.Password != "" {
+		generate, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Error("error on bcrypt password updated user", err.Error())
+			return domain.UserCore{}, errors.New("cannot encrypt password")
+		}
+		updatedUser.Password = string(generate)
+	}
+
+	res, err := us.qry.Update(updatedUser, userID)
 	if err != nil {
 		if strings.Contains(err.Error(), "column") {
 			return domain.UserCore{}, errors.New("rejected from database")
 		}
 		return domain.UserCore{}, errors.New("some problem on database")
 	}
+
 	return res, nil
 }
 
