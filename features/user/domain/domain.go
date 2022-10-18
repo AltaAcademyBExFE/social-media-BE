@@ -10,7 +10,7 @@ type UserCore struct {
 }
 
 type Repository interface {
-	GetMyUser() (UserCore, error)
+	GetMyUser(userID uint) (UserCore, error)
 	Update(updatedUser UserCore) (UserCore, error)
 	Delete(deletedUser UserCore) (UserCore, error)
 	GetByEmail(email string) (UserCore, error)
@@ -19,7 +19,7 @@ type Repository interface {
 }
 
 type Service interface {
-	MyProfile() (UserCore, error)
+	MyProfile(userID uint) (UserCore, error)
 	UpdateProfile(updatedUser UserCore) (UserCore, error)
 	Deactivate(deletedUser UserCore) (UserCore, error)
 	ShowByEmail(email string) (UserCore, error)
