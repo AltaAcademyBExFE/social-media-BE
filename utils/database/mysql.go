@@ -24,6 +24,7 @@ func InitDB(c *config.AppConfig) *gorm.DB {
 		log.Error("db config error :", err.Error())
 		return nil
 	}
+	migrateDB(db)
 	return db
 }
 
