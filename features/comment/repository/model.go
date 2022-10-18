@@ -13,6 +13,12 @@ type Comment struct {
 	UserID int
 }
 
+type CommentIt struct {
+	gorm.Model
+	Body string
+	Name string
+}
+
 func FromDomain(do domain.Core) Comment {
 	return Comment{
 		Model:  gorm.Model{ID: do.ID},
@@ -22,11 +28,10 @@ func FromDomain(do domain.Core) Comment {
 	}
 }
 
-func ToDomain(c Comment) domain.Core {
-	return domain.Core{
-		Model:  gorm.Model{ID: c.ID},
-		Body:   c.Body,
-		PostID: c.PostID,
-		UserID: c.UserID,
+func ToDomain(c CommentIt) domain.Cores {
+	return domain.Cores{
+		Model: gorm.Model{ID: c.ID, CreatedAt: c.CreatedAt},
+		Body:  c.Body,
+		Name:  c.Name,
 	}
 }

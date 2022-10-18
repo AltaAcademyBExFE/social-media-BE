@@ -12,13 +12,19 @@ type Core struct {
 	UserID int
 }
 
+type Cores struct {
+	gorm.Model
+	Body string
+	Name string
+}
+
 type Repository interface {
-	Insert(newComment Core) (Core, error)
+	Insert(newComment Core) (Cores, error)
 	Del(ID int) error
 }
 
 type Service interface {
-	Create(newComment Core) (Core, error)
+	Create(newComment Core) (Cores, error)
 	Delete(ID int) error
 }
 

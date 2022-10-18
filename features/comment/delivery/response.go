@@ -19,10 +19,8 @@ func FailResponse(msg string) map[string]string {
 }
 
 type Responses struct {
-	ID        uint      `json:"id"`
 	Body      string    `json:"body"`
-	PostID    int       `json:"post"`
-	UserID    int       `json:"user"`
+	Name      string    `json:"user"`
 	CreatedAt time.Time `json:"create"`
 }
 
@@ -30,9 +28,8 @@ func ToResponse(core interface{}, code string) interface{} {
 	var res interface{}
 	switch code {
 	case "comment":
-		cnv := core.(domain.Core)
-		res = Responses{ID: cnv.ID, Body: cnv.Body, PostID: cnv.PostID, UserID: cnv.UserID, CreatedAt: cnv.CreatedAt}
+		cnv := core.(domain.Cores)
+		res = Responses{Body: cnv.Body, Name: cnv.Name, CreatedAt: cnv.CreatedAt}
 	}
-
 	return res
 }

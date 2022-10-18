@@ -17,15 +17,17 @@ func New(dbConn *gorm.DB) domain.Repository {
 	}
 }
 
-func (rq *repoQuery) Insert(newComment domain.Core) (domain.Core, error) {
-	var cnv Comment
-	cnv = FromDomain(newComment)
+func (rq *repoQuery) Insert(newComment domain.Core) (domain.Cores, error) {
+	var resQry CommentIt
 	if err := rq.db.Exec("INSERT INTO comments (id, created_at, updated_at, deleted_at, body, post_id, user_id) values (?,?,?,?,?,?,?)",
 		nil, time.Now(), nil, nil, newComment.Body, newComment.PostID, newComment.UserID).Error; err != nil {
-		return domain.Core{}, err
+		return domain.Cores{}, err
 	}
-	newComment = ToDomain(cnv)
-	return newComment, nil
+	if er := rq.db.Table("comments").Select("comments.created_at", "comments.body", "users.name").Joins("join users on users.id=comments.user_id").Where("comments.body = ? AND comments.user_id = ?", newComment.Body, newComment.UserID).Model(&CommentIt{}).Find(&resQry).Error; er != nil {
+		return domain.Cores{}, er
+	}
+	res := ToDomain(resQry)
+	return res, nil
 }
 
 func (rq *repoQuery) Del(ID int) error {

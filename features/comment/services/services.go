@@ -18,15 +18,15 @@ func New(repo domain.Repository) domain.Service {
 	}
 }
 
-func (cs *CommentService) Create(newComment domain.Core) (domain.Core, error) {
+func (cs *CommentService) Create(newComment domain.Core) (domain.Cores, error) {
 	res, err := cs.qry.Insert(newComment)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate") {
-			return domain.Core{}, errors.New("Rejected from Database")
+			return domain.Cores{}, errors.New("Rejected from Database")
 		}
 
-		return domain.Core{}, errors.New("Some Problem on Database")
+		return domain.Cores{}, errors.New("Some Problem on Database")
 	}
 
 	return res, nil
