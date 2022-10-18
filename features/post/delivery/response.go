@@ -22,7 +22,14 @@ type Responses struct {
 	ID        uint      `json:"id"`
 	Body      string    `json:"body"`
 	Images    string    `json:"img"`
-	UserID    int       `json:"user"`
+	Name      string    `json:"user"`
+	CreatedAt time.Time `json:"create"`
+}
+
+type Response struct {
+	Body      string    `json:"body"`
+	Images    string    `json:"img"`
+	Name      string    `json:"user"`
 	CreatedAt time.Time `json:"create"`
 }
 
@@ -30,13 +37,13 @@ func ToResponse(core interface{}, code string) interface{} {
 	var res interface{}
 	switch code {
 	case "post":
-		cnv := core.(domain.Core)
-		res = Responses{ID: cnv.ID, Body: cnv.Body, Images: cnv.Images, UserID: cnv.UserID, CreatedAt: cnv.CreatedAt}
+		cnv := core.(domain.Cores)
+		res = Response{Body: cnv.Body, Images: cnv.Images, Name: cnv.Name, CreatedAt: cnv.CreatedAt}
 	case "all":
 		var arr []Responses
-		cnv := core.([]domain.Core)
+		cnv := core.([]domain.Cores)
 		for _, val := range cnv {
-			arr = append(arr, Responses{ID: val.ID, Body: val.Body, Images: val.Images, UserID: val.UserID, CreatedAt: val.CreatedAt})
+			arr = append(arr, Responses{ID: val.ID, Body: val.Body, Images: val.Images, Name: val.Name, CreatedAt: val.CreatedAt})
 		}
 		res = arr
 	}

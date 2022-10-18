@@ -17,9 +17,10 @@ type postHandler struct {
 func New(e *echo.Echo, srv domain.Service) {
 	handler := postHandler{srv: srv}
 	e.GET("/posts", handler.ShowAllPost())
-	e.GET("/posts/:id", handler.ShowMyPost())
+	e.GET("/posts/me", handler.ShowMyPost())
+	e.GET("/posts/:id", handler.ShowSpesificPost())
 	e.POST("/posts", handler.CreatePost())
-	e.PUT("/posts", handler.EditPost())
+	e.PUT("/posts/:id", handler.EditPost())
 	e.DELETE("/posts/:id", handler.DeletePost())
 }
 
@@ -36,8 +37,24 @@ func (ph *postHandler) ShowAllPost() echo.HandlerFunc {
 
 func (ps *postHandler) ShowMyPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		//ID, _ := strconv.Atoi(c.Param("id"))
+		res, err := ps.srv.ShowMy(1)
+		if err != nil {
+			log.Error(err.Error())
+			if strings.Contains(err.Error(), "table") {
+				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+			} else if strings.Contains(err.Error(), "found") {
+				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+			}
+		}
+		return c.JSON(http.StatusOK, SuccessResponse("Success get my post", ToResponse(res, "all")))
+	}
+}
+
+func (ps *postHandler) ShowSpesificPost() echo.HandlerFunc {
+	return func(c echo.Context) error {
 		ID, _ := strconv.Atoi(c.Param("id"))
-		res, err := ps.srv.ShowMy(ID)
+		res, err := ps.srv.ShowSpesific(ID)
 		if err != nil {
 			log.Error(err.Error())
 			if strings.Contains(err.Error(), "table") {
@@ -68,12 +85,13 @@ func (ph *postHandler) CreatePost() echo.HandlerFunc {
 
 func (ph *postHandler) EditPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var input EditFormat
+		ID, _ := strconv.Atoi(c.Param("id"))
+		var input PostingFormat
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
 		}
 		cnv := ToDomain(input)
-		res, err := ph.srv.Edit(cnv)
+		res, err := ph.srv.Edit(ID, cnv)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 		}

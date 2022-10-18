@@ -18,7 +18,7 @@ func New(repo domain.Repository) domain.Service {
 	}
 }
 
-func (ps *PostService) ShowAll() ([]domain.Core, error) {
+func (ps *PostService) ShowAll() ([]domain.Cores, error) {
 	res, err := ps.qry.Show()
 	if err != nil {
 		log.Error(err.Error())
@@ -36,7 +36,7 @@ func (ps *PostService) ShowAll() ([]domain.Core, error) {
 	return res, nil
 }
 
-func (ps *PostService) ShowMy(ID int) ([]domain.Core, error) {
+func (ps *PostService) ShowMy(ID int) ([]domain.Cores, error) {
 	res, err := ps.qry.My(ID)
 	if err != nil {
 		log.Error(err.Error())
@@ -50,29 +50,43 @@ func (ps *PostService) ShowMy(ID int) ([]domain.Core, error) {
 	return res, nil
 }
 
-func (ps *PostService) Create(newPost domain.Core) (domain.Core, error) {
-	res, err := ps.qry.Insert(newPost)
-
+func (ps *PostService) ShowSpesific(ID int) ([]domain.Cores, error) {
+	res, err := ps.qry.Spesific(ID)
 	if err != nil {
-		if strings.Contains(err.Error(), "duplicate") {
-			return domain.Core{}, errors.New("Rejected from Database")
+		log.Error(err.Error())
+		if strings.Contains(err.Error(), "table") {
+			return nil, errors.New("Database Error")
+		} else if strings.Contains(err.Error(), "found") {
+			return nil, errors.New("No Data")
 		}
-
-		return domain.Core{}, errors.New("Some Problem on Database")
 	}
 
 	return res, nil
 }
 
-func (ps *PostService) Edit(updatePost domain.Core) (domain.Core, error) {
-	res, err := ps.qry.Update(updatePost)
+func (ps *PostService) Create(newPost domain.Core) (domain.Cores, error) {
+	res, err := ps.qry.Insert(newPost)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "duplicate") {
-			return domain.Core{}, errors.New("Rejected from Database")
+			return domain.Cores{}, errors.New("Rejected from Database")
 		}
 
-		return domain.Core{}, errors.New("Some Problem on Database")
+		return domain.Cores{}, errors.New("Some Problem on Database")
+	}
+
+	return res, nil
+}
+
+func (ps *PostService) Edit(ID int, updatePost domain.Core) (domain.Cores, error) {
+	res, err := ps.qry.Update(ID, updatePost)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate") {
+			return domain.Cores{}, errors.New("Rejected from Database")
+		}
+
+		return domain.Cores{}, errors.New("Some Problem on Database")
 	}
 
 	return res, nil

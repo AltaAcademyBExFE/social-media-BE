@@ -13,6 +13,13 @@ type Post struct {
 	UserID int
 }
 
+type PostIt struct {
+	gorm.Model
+	Body   string
+	Images string
+	Name   string
+}
+
 func FromDomain(do domain.Core) Post {
 	return Post{
 		Model:  gorm.Model{ID: do.ID},
@@ -22,12 +29,12 @@ func FromDomain(do domain.Core) Post {
 	}
 }
 
-func ToDomain(p Post) domain.Core {
-	return domain.Core{
-		Model:  gorm.Model{ID: p.ID},
+func ToDomain(p PostIt) domain.Cores {
+	return domain.Cores{
+		Model:  gorm.Model{ID: p.ID, CreatedAt: p.CreatedAt},
 		Body:   p.Body,
 		Images: p.Images,
-		UserID: p.UserID,
+		Name:   p.Name,
 	}
 }
 
@@ -35,6 +42,15 @@ func ToDomainArray(ap []Post) []domain.Core {
 	var res []domain.Core
 	for _, val := range ap {
 		res = append(res, domain.Core{Model: gorm.Model{ID: val.ID}, Body: val.Body, Images: val.Images, UserID: val.UserID})
+	}
+
+	return res
+}
+
+func ToDomainArrayIt(ai []PostIt) []domain.Cores {
+	var res []domain.Cores
+	for _, val := range ai {
+		res = append(res, domain.Cores{Model: gorm.Model{ID: val.ID, CreatedAt: val.CreatedAt}, Body: val.Body, Images: val.Images, Name: val.Name})
 	}
 
 	return res

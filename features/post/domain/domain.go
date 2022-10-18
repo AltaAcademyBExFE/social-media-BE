@@ -12,26 +12,36 @@ type Core struct {
 	UserID int
 }
 
+type Cores struct {
+	gorm.Model
+	Body   string
+	Images string
+	Name   string
+}
+
 type Repository interface {
-	Show() ([]Core, error)
-	My(ID int) ([]Core, error)
-	Insert(newPost Core) (Core, error)
-	Update(updatePost Core) (Core, error)
+	Show() ([]Cores, error)
+	My(ID int) ([]Cores, error)
+	Spesific(ID int) ([]Cores, error)
+	Insert(newPost Core) (Cores, error)
+	Update(ID int, updatePost Core) (Cores, error)
 	Del(ID int) error
 }
 
 type Service interface {
-	ShowAll() ([]Core, error)
-	ShowMy(ID int) ([]Core, error)
-	Create(newPost Core) (Core, error)
-	Edit(updatePost Core) (Core, error)
+	ShowAll() ([]Cores, error)
+	ShowMy(ID int) ([]Cores, error)
+	ShowSpesific(ID int) ([]Cores, error)
+	Create(newPost Core) (Cores, error)
+	Edit(ID int, updatePost Core) (Cores, error)
 	Delete(ID int) error
 }
 
 type Handler interface {
 	ShowAllPost() echo.HandlerFunc
 	ShowMyPost(ID int) echo.HandlerFunc
+	ShowSpesificPost(ID int) echo.HandlerFunc
 	CreatePost() echo.HandlerFunc
-	EditPost() echo.HandlerFunc
+	EditPost(ID int) echo.HandlerFunc
 	DeletePost(ID int) echo.HandlerFunc
 }
