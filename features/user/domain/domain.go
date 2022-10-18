@@ -15,7 +15,7 @@ type Repository interface {
 	Delete(deletedUser UserCore) (UserCore, error)
 	GetByEmail(email string) (UserCore, error)
 	AddUser(newUser UserCore) (UserCore, error)
-	GetUser(user UserCore) (UserCore, error)
+	GetUser(existUser UserCore) (UserCore, error)
 }
 
 type Service interface {
@@ -24,5 +24,5 @@ type Service interface {
 	Deactivate(deletedUser UserCore) (UserCore, error)
 	ShowByEmail(email string) (UserCore, error)
 	Register(newUser UserCore) (UserCore, error)
-	Login(user UserCore) (UserCore, error)
+	Login(existUser UserCore) (UserCore, error)
 }
