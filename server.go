@@ -2,6 +2,9 @@ package main
 
 import (
 	"sosmed/config"
+	cd "sosmed/features/comment/delivery"
+	cr "sosmed/features/comment/repository"
+	cs "sosmed/features/comment/services"
 	pd "sosmed/features/post/delivery"
 	pr "sosmed/features/post/repository"
 	ps "sosmed/features/post/services"
@@ -20,6 +23,10 @@ func main() {
 	pRepo := pr.New(db)
 	pService := ps.New(pRepo)
 	pd.New(e, pService)
+
+	cRepo := cr.New(db)
+	cService := cs.New(cRepo)
+	cd.New(e, cService)
 
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.CORS())
