@@ -1,10 +1,12 @@
 package delivery
 
 import (
+	"io/ioutil"
 	"net/http"
 	"sosmed/features/post/domain"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -70,16 +72,36 @@ func (ps *postHandler) ShowSpesificPost() echo.HandlerFunc {
 func (ph *postHandler) CreatePost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input PostingFormat
-		if err := c.Bind(&input); err != nil {
-			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
-		}
-		cnv := ToDomain(input)
-		res, err := ph.srv.Create(cnv)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+
+		isSuccess := true
+		file, er := c.FormFile("img")
+		if er != nil {
+			isSuccess = false
+		} else {
+			src, err := file.Open()
+			if err != nil {
+				isSuccess = false
+			} else {
+				fileByte, _ := ioutil.ReadAll(src)
+				input.Images = "public/images/" + strconv.FormatInt(time.Now().Unix(), 10) + ".jpg"
+				ioutil.WriteFile(input.Images, fileByte, 0777)
+			}
+			defer src.Close()
 		}
 
-		return c.JSON(http.StatusCreated, SuccessResponse("Success create new post", ToResponse(res, "post")))
+		if isSuccess {
+			if err := c.Bind(&input); err != nil {
+				return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
+			}
+			cnv := ToDomain(input)
+			res, err := ph.srv.Create(cnv)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+			}
+
+			return c.JSON(http.StatusCreated, SuccessResponse("Success create new post", ToResponse(res, "post")))
+		}
+		return c.JSON(http.StatusBadRequest, FailResponse("fail upload file"))
 	}
 }
 
@@ -87,16 +109,36 @@ func (ph *postHandler) EditPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ID, _ := strconv.Atoi(c.Param("id"))
 		var input PostingFormat
-		if err := c.Bind(&input); err != nil {
-			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
-		}
-		cnv := ToDomain(input)
-		res, err := ph.srv.Edit(ID, cnv)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+
+		isSuccess := true
+		file, er := c.FormFile("img")
+		if er != nil {
+			isSuccess = false
+		} else {
+			src, err := file.Open()
+			if err != nil {
+				isSuccess = false
+			} else {
+				fileByte, _ := ioutil.ReadAll(src)
+				input.Images = "public/images/" + strconv.FormatInt(time.Now().Unix(), 10) + ".jpg"
+				ioutil.WriteFile(input.Images, fileByte, 0777)
+			}
+			defer src.Close()
 		}
 
-		return c.JSON(http.StatusCreated, SuccessResponse("Success edit post", ToResponse(res, "post")))
+		if isSuccess {
+			if err := c.Bind(&input); err != nil {
+				return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
+			}
+			cnv := ToDomain(input)
+			res, err := ph.srv.Edit(ID, cnv)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
+			}
+
+			return c.JSON(http.StatusCreated, SuccessResponse("Success edit post", ToResponse(res, "post")))
+		}
+		return c.JSON(http.StatusBadRequest, FailResponse("fail upload file"))
 	}
 }
 
