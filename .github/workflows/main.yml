@@ -36,7 +36,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd Download
+            cd Downloads
             cd social-media-BE
-            docker build -t mdanys/deploy
+            docker build -t mdanys/deploy .
             docker run --name projectsosmed --link mysqlbe12 -d -p 8000:8000 -e DB_USER = ${{secrets.DB_USER}} -e DB_PWD = ${{secrets.DB_PWD}} -e DB_HOST= ${{secrets.DB_HOST}}  -e DB_PORT = ${{secrets.DB_PORT}}  -e DB_NAME = ${{secrets.DB_NAME}} -e JW_SECRET = ${{secrets.JW_SECRET}} mdanys/deploy
