@@ -1,6 +1,8 @@
 package common
 
 import (
+	"fmt"
+	"sosmed/config"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -16,7 +18,7 @@ func GenerateToken(id uint) string {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
-	str, err := token.SignedString([]byte("R4h@S1a"))
+	str, err := token.SignedString([]byte(config.JwtKey))
 	if err != nil {
 		log.Error("error on token signed string", err.Error())
 		return "cannot generate token"
@@ -28,6 +30,7 @@ func ExtractToken(c echo.Context) uint {
 	token := c.Get("user").(*jwt.Token)
 	if token.Valid {
 		claim := token.Claims.(jwt.MapClaims)
+		fmt.Print(uint(claim["id"].(float64)))
 		return uint(claim["id"].(float64))
 	}
 	return 0

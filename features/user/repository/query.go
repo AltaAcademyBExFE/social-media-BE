@@ -2,6 +2,7 @@ package repository
 
 import (
 	"sosmed/features/user/domain"
+	"time"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
@@ -26,35 +27,25 @@ func (rq *repoQuery) GetMyUser(userID uint) (domain.UserCore, error) {
 }
 
 func (rq *repoQuery) Update(updatedUser domain.UserCore, userID uint) (domain.UserCore, error) {
-	var data User
-	if err := rq.db.First(&data, "id = ?", userID).Error; err != nil {
-		log.Error("error on getting updated user", err.Error())
-		return domain.UserCore{}, err
-	}
-
-	cnv := FromDomain(updatedUser)
-	if err := rq.db.Save(&cnv).Error; err != nil {
+	var cnv User = FromDomain(updatedUser)
+	if err := rq.db.Exec("UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ?, updated_at = ? WHERE id = ?",
+		cnv.Name, cnv.Email, cnv.Phone, cnv.Address, cnv.Password, time.Now(), userID).Error; err != nil {
 		log.Error("error on updating user", err.Error())
 		return domain.UserCore{}, err
-	}
-
-	if rq.db.RowsAffected == 0 {
-		log.Info("content not updated")
-		return domain.UserCore{}, nil
 	}
 
 	updatedUser = ToDomain(cnv)
 	return updatedUser, nil
 }
 
-func (rq *repoQuery) Delete(deletedUser domain.UserCore) (domain.UserCore, error) {
-	var data User = FromDomain(deletedUser)
-	if err := rq.db.Delete(&data).Error; err != nil {
+func (rq *repoQuery) Delete(userID uint) (domain.UserCore, error) {
+	var data User
+	if err := rq.db.Delete(&data, "id = ?", userID).Error; err != nil {
 		log.Error("error on deleting user", err.Error())
 		return domain.UserCore{}, err
 	}
-	deletedUser = ToDomain(data)
-	return deletedUser, nil
+	res := ToDomain(data)
+	return res, nil
 }
 
 func (rq *repoQuery) GetByEmail(email string) (domain.UserCore, error) {

@@ -14,7 +14,9 @@ type LoginFormat struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
 }
-
+type GetUserFormat struct {
+	Email string `json:"email" form:"email"`
+}
 type DeleteFormat struct {
 	Name string `json:"name" form:"name"`
 }
@@ -27,6 +29,9 @@ func ToDomain(i interface{}) domain.UserCore {
 	case LoginFormat:
 		cnv := i.(LoginFormat)
 		return domain.UserCore{Email: cnv.Email, Password: cnv.Password}
+	case GetUserFormat:
+		cnv := i.(GetUserFormat)
+		return domain.UserCore{Email: cnv.Email}
 	case DeleteFormat:
 		cnv := i.(DeleteFormat)
 		return domain.UserCore{Name: cnv.Name}

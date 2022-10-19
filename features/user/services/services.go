@@ -50,8 +50,8 @@ func (us *userService) UpdateProfile(updatedUser domain.UserCore, userID uint) (
 	return res, nil
 }
 
-func (us *userService) Deactivate(deletedUser domain.UserCore) (domain.UserCore, error) {
-	res, err := us.qry.Delete(deletedUser)
+func (us *userService) Deactivate(userID uint) (domain.UserCore, error) {
+	res, err := us.qry.Delete(userID)
 	if err != nil {
 		if strings.Contains(err.Error(), "table") {
 			return domain.UserCore{}, errors.New("database error")

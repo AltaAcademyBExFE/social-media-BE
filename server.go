@@ -15,6 +15,7 @@ func main() {
 	e := echo.New()
 	cfg := config.NewConfig()
 	db := database.InitDB(cfg)
+	database.MigrateDB(db)
 
 	uRepo := ur.New(db)
 	uService := us.New(uRepo)

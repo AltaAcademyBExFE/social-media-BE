@@ -11,7 +11,6 @@ type RegisterResponse struct {
 
 type LoginResponse struct {
 	Email string `json:"email"`
-	Token string `json:"token"`
 }
 
 func ToResponse(core interface{}, code string) interface{} {
@@ -22,7 +21,7 @@ func ToResponse(core interface{}, code string) interface{} {
 		res = RegisterResponse{Name: cnv.Name, Email: cnv.Email, Phone: cnv.Phone, Address: cnv.Address}
 	case "login":
 		cnv := core.(domain.UserCore)
-		res = LoginResponse{Email: cnv.Email, Token: cnv.Token}
+		res = LoginResponse{Email: cnv.Email}
 	}
 	return res
 }
@@ -31,6 +30,14 @@ func SuccessResponse(msg string, data interface{}) map[string]interface{} {
 	return map[string]interface{}{
 		"Message": msg,
 		"Data":    data,
+	}
+}
+
+func SuccessLogin(msg string, data interface{}, token interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"Message": msg,
+		"Data":    data,
+		"Token":   token,
 	}
 }
 
