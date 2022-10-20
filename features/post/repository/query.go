@@ -17,31 +17,46 @@ func New(dbConn *gorm.DB) domain.Repository {
 	}
 }
 
-func (rq *repoQuery) Show() ([]domain.Cores, error) {
+func (rq *repoQuery) Show() ([]domain.Cores, []domain.Comes, error) {
 	var resQry []PostIt
+	var comQry []CommentIt
 	if err := rq.db.Table("posts").Select("posts.id", "posts.created_at", "posts.body", "posts.images", "users.name").Joins("join users on users.id=posts.user_id").Model(&PostIt{}).Find(&resQry).Error; err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	if er := rq.db.Table("comments").Select("comments.created_at", "comments.body", "users.name", "comments.post_id").Joins("join users on users.id=comments.user_id").Model(&CommentIt{}).Find(&comQry).Error; er != nil {
+		return nil, nil, er
+	}
+	rel := ToDomainCommentIt(comQry)
 	res := ToDomainArrayIt(resQry)
-	return res, nil
+	return res, rel, nil
 }
 
-func (rq *repoQuery) My(ID int) ([]domain.Cores, error) {
+func (rq *repoQuery) My(ID int) ([]domain.Cores, []domain.Comes, error) {
 	var resQry []PostIt
+	var comQry []CommentIt
 	if err := rq.db.Table("posts").Select("posts.id", "posts.created_at", "posts.body", "posts.images", "users.name").Joins("join users on users.id=posts.user_id").Where("users.id = ?", ID).Model(&PostIt{}).Find(&resQry).Error; err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	if er := rq.db.Table("comments").Select("comments.created_at", "comments.body", "users.name", "comments.post_id").Joins("join users on users.id=comments.user_id").Joins("join posts on posts.id=comments.post_id").Where("posts.user_id = ?", ID).Model(&CommentIt{}).Find(&comQry).Error; er != nil {
+		return nil, nil, er
+	}
+	rel := ToDomainCommentIt(comQry)
 	res := ToDomainArrayIt(resQry)
-	return res, nil
+	return res, rel, nil
 }
 
-func (rq *repoQuery) Spesific(ID int) ([]domain.Cores, error) {
+func (rq *repoQuery) Spesific(ID int) ([]domain.Cores, []domain.Comes, error) {
 	var resQry []PostIt
+	var comQry []CommentIt
 	if err := rq.db.Table("posts").Select("posts.id", "posts.created_at", "posts.body", "posts.images", "users.name").Joins("join users on users.id=posts.user_id").Where("posts.id = ?", ID).Model(&PostIt{}).Find(&resQry).Error; err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	if er := rq.db.Table("comments").Select("comments.created_at", "comments.body", "users.name", "comments.post_id").Joins("join users on users.id=comments.user_id").Joins("join posts on posts.id=comments.post_id").Where("posts.id = ?", ID).Model(&CommentIt{}).Find(&comQry).Error; er != nil {
+		return nil, nil, er
+	}
+	rel := ToDomainCommentIt(comQry)
 	res := ToDomainArrayIt(resQry)
-	return res, nil
+	return res, rel, nil
 }
 
 func (rq *repoQuery) Insert(newPost domain.Core) (domain.Cores, error) {

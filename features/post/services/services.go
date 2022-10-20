@@ -18,50 +18,50 @@ func New(repo domain.Repository) domain.Service {
 	}
 }
 
-func (ps *PostService) ShowAll() ([]domain.Cores, error) {
-	res, err := ps.qry.Show()
+func (ps *PostService) ShowAll() ([]domain.Cores, []domain.Comes, error) {
+	res, rel, err := ps.qry.Show()
 	if err != nil {
 		log.Error(err.Error())
 		if strings.Contains(err.Error(), "table") {
-			return nil, errors.New("Database Error")
+			return nil, nil, errors.New("Database Error")
 		} else if strings.Contains(err.Error(), "found") {
-			return nil, errors.New("No Data")
+			return nil, nil, errors.New("No Data")
 		}
 	}
 
 	if len(res) == 0 {
 		log.Info("No Data")
-		return nil, errors.New("No Data")
+		return nil, nil, errors.New("No Data")
 	}
-	return res, nil
+	return res, rel, nil
 }
 
-func (ps *PostService) ShowMy(ID int) ([]domain.Cores, error) {
-	res, err := ps.qry.My(ID)
+func (ps *PostService) ShowMy(ID int) ([]domain.Cores, []domain.Comes, error) {
+	res, rel, err := ps.qry.My(ID)
 	if err != nil {
 		log.Error(err.Error())
 		if strings.Contains(err.Error(), "table") {
-			return nil, errors.New("Database Error")
+			return nil, nil, errors.New("Database Error")
 		} else if strings.Contains(err.Error(), "found") {
-			return nil, errors.New("No Data")
+			return nil, nil, errors.New("No Data")
 		}
 	}
 
-	return res, nil
+	return res, rel, nil
 }
 
-func (ps *PostService) ShowSpesific(ID int) ([]domain.Cores, error) {
-	res, err := ps.qry.Spesific(ID)
+func (ps *PostService) ShowSpesific(ID int) ([]domain.Cores, []domain.Comes, error) {
+	res, rel, err := ps.qry.Spesific(ID)
 	if err != nil {
 		log.Error(err.Error())
 		if strings.Contains(err.Error(), "table") {
-			return nil, errors.New("Database Error")
+			return nil, nil, errors.New("Database Error")
 		} else if strings.Contains(err.Error(), "found") {
-			return nil, errors.New("No Data")
+			return nil, nil, errors.New("No Data")
 		}
 	}
 
-	return res, nil
+	return res, rel, nil
 }
 
 func (ps *PostService) Create(newPost domain.Core) (domain.Cores, error) {

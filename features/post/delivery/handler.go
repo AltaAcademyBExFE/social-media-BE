@@ -28,19 +28,19 @@ func New(e *echo.Echo, srv domain.Service) {
 
 func (ph *postHandler) ShowAllPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		res, err := ph.srv.ShowAll()
+		res, rel, err := ph.srv.ShowAll()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 		}
 
-		return c.JSON(http.StatusOK, SuccessResponse("Success get all post", ToResponse(res, "all")))
+		return c.JSON(http.StatusOK, SuccessResponse("Success get all post", ToResponse(res, rel, "all")))
 	}
 }
 
 func (ps *postHandler) ShowMyPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		//ID, _ := strconv.Atoi(c.Param("id"))
-		res, err := ps.srv.ShowMy(1)
+		res, rel, err := ps.srv.ShowMy(1)
 		if err != nil {
 			log.Error(err.Error())
 			if strings.Contains(err.Error(), "table") {
@@ -49,14 +49,14 @@ func (ps *postHandler) ShowMyPost() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 			}
 		}
-		return c.JSON(http.StatusOK, SuccessResponse("Success get my post", ToResponse(res, "all")))
+		return c.JSON(http.StatusOK, SuccessResponse("Success get my post", ToResponse(res, rel, "all")))
 	}
 }
 
 func (ps *postHandler) ShowSpesificPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ID, _ := strconv.Atoi(c.Param("id"))
-		res, err := ps.srv.ShowSpesific(ID)
+		res, rel, err := ps.srv.ShowSpesific(ID)
 		if err != nil {
 			log.Error(err.Error())
 			if strings.Contains(err.Error(), "table") {
@@ -65,7 +65,7 @@ func (ps *postHandler) ShowSpesificPost() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 			}
 		}
-		return c.JSON(http.StatusOK, SuccessResponse("Success get my post", ToResponse(res, "all")))
+		return c.JSON(http.StatusOK, SuccessResponse("Success get my post", ToResponse(res, rel, "ally")))
 	}
 }
 
@@ -99,7 +99,7 @@ func (ph *postHandler) CreatePost() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 			}
 
-			return c.JSON(http.StatusCreated, SuccessResponse("Success create new post", ToResponse(res, "post")))
+			return c.JSON(http.StatusCreated, SuccessResponse("Success create new post", ToResponse(res, nil, "post")))
 		}
 		return c.JSON(http.StatusBadRequest, FailResponse("fail upload file"))
 	}
@@ -136,7 +136,7 @@ func (ph *postHandler) EditPost() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 			}
 
-			return c.JSON(http.StatusCreated, SuccessResponse("Success edit post", ToResponse(res, "post")))
+			return c.JSON(http.StatusCreated, SuccessResponse("Success edit post", ToResponse(res, nil, "post")))
 		}
 		return c.JSON(http.StatusBadRequest, FailResponse("fail upload file"))
 	}
@@ -154,6 +154,6 @@ func (ph *postHandler) DeletePost() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 			}
 		}
-		return c.JSON(http.StatusOK, "Success delete post")
+		return c.JSON(http.StatusOK, FailResponse("Success delete post"))
 	}
 }

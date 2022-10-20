@@ -19,19 +19,26 @@ type Cores struct {
 	Name   string
 }
 
+type Comes struct {
+	gorm.Model
+	Body   string
+	Name   string
+	PostID int
+}
+
 type Repository interface {
-	Show() ([]Cores, error)
-	My(ID int) ([]Cores, error)
-	Spesific(ID int) ([]Cores, error)
+	Show() ([]Cores, []Comes, error)
+	My(ID int) ([]Cores, []Comes, error)
+	Spesific(ID int) ([]Cores, []Comes, error)
 	Insert(newPost Core) (Cores, error)
 	Update(ID int, updatePost Core) (Cores, error)
 	Del(ID int) error
 }
 
 type Service interface {
-	ShowAll() ([]Cores, error)
-	ShowMy(ID int) ([]Cores, error)
-	ShowSpesific(ID int) ([]Cores, error)
+	ShowAll() ([]Cores, []Comes, error)
+	ShowMy(ID int) ([]Cores, []Comes, error)
+	ShowSpesific(ID int) ([]Cores, []Comes, error)
 	Create(newPost Core) (Cores, error)
 	Edit(ID int, updatePost Core) (Cores, error)
 	Delete(ID int) error
