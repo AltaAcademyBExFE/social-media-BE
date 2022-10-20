@@ -36,6 +36,9 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            docker stop projectsosmed
+            docker rm projectsosmed
+            docker rmi projectsosmed:latest
             cd Downloads
             cd social-media-BE
             docker build -t projectsosmed .
