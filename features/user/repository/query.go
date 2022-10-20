@@ -2,7 +2,6 @@ package repository
 
 import (
 	"sosmed/features/user/domain"
-	"time"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/gorm"
@@ -28,14 +27,13 @@ func (rq *repoQuery) GetMyUser(userID uint) (domain.UserCore, error) {
 
 func (rq *repoQuery) Update(updatedUser domain.UserCore, userID uint) (domain.UserCore, error) {
 	var cnv User = FromDomain(updatedUser)
-	if err := rq.db.Exec("UPDATE users SET name = ?, email = ?, phone = ?, address = ?, password = ?, updated_at = ? WHERE id = ?",
-		cnv.Name, cnv.Email, cnv.Phone, cnv.Address, cnv.Password, time.Now(), userID).Error; err != nil {
+	if err := rq.db.Table("users").Where("id = ?", userID).Updates(&cnv).Error; err != nil {
 		log.Error("error on updating user", err.Error())
 		return domain.UserCore{}, err
 	}
 
-	updatedUser = ToDomain(cnv)
-	return updatedUser, nil
+	res := ToDomain(cnv)
+	return res, nil
 }
 
 func (rq *repoQuery) Delete(userID uint) (domain.UserCore, error) {
