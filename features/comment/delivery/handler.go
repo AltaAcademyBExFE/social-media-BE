@@ -48,6 +48,6 @@ func (ch *commentHandler) DeleteComment() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
 			}
 		}
-		return c.JSON(http.StatusOK, "Success delete comment")
+		return c.JSON(http.StatusOK, FailResponse("Success delete comment"))
 	}
 }
