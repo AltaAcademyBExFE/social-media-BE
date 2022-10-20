@@ -30,6 +30,7 @@ func main() {
 	cRepo := cr.New(db)
 	cService := cs.New(cRepo)
 	cd.New(e, cService)
+
 	uRepo := ur.New(db)
 	uService := us.New(uRepo)
 	ud.New(e, uService)
