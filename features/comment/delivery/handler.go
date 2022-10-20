@@ -27,7 +27,7 @@ func (ch *commentHandler) CreateComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input CommentFormat
 		userID := common.ExtractToken(c)
-		input.UserID = userID
+		input.UserID = int(userID)
 		if err := c.Bind(&input); err != nil {
 			return c.JSON(http.StatusBadRequest, FailResponse("cannot bind input"))
 		}

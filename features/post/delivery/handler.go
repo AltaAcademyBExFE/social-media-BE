@@ -46,7 +46,7 @@ func (ph *postHandler) ShowAllPost() echo.HandlerFunc {
 func (ps *postHandler) ShowMyPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		userID := common.ExtractToken(c)
-		res, rel, err := ps.srv.ShowMy(userID)
+		res, rel, err := ps.srv.ShowMy(int(userID))
 		if err != nil {
 			log.Error(err.Error())
 			if strings.Contains(err.Error(), "table") {
@@ -79,7 +79,7 @@ func (ph *postHandler) CreatePost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input PostingFormat
 		userID := common.ExtractToken(c)
-		input.UserID = userID
+		input.UserID = int(userID)
 
 		cfg, errDef := config.LoadDefaultConfig(context.TODO())
 		if errDef != nil {
@@ -137,7 +137,7 @@ func (ph *postHandler) EditPost() echo.HandlerFunc {
 		ID, _ := strconv.Atoi(c.Param("id"))
 		var input PostingFormat
 		userID := common.ExtractToken(c)
-		input.UserID = userID
+		input.UserID = int(userID)
 
 		cfg, errDef := config.LoadDefaultConfig(context.TODO())
 		if errDef != nil {
