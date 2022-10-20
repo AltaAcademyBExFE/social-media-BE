@@ -1,14 +1,21 @@
 package delivery
 
 import (
-	"io/ioutil"
+	"context"
 	"net/http"
+	sc "sosmed/config"
 	"sosmed/features/post/domain"
+	"sosmed/utils/common"
 	"strconv"
 	"strings"
-	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 )
 
@@ -19,11 +26,11 @@ type postHandler struct {
 func New(e *echo.Echo, srv domain.Service) {
 	handler := postHandler{srv: srv}
 	e.GET("/posts", handler.ShowAllPost())
-	e.GET("/posts/me", handler.ShowMyPost())
-	e.GET("/posts/:id", handler.ShowSpesificPost())
-	e.POST("/posts", handler.CreatePost())
-	e.PUT("/posts/:id", handler.EditPost())
-	e.DELETE("/posts/:id", handler.DeletePost())
+	e.GET("/posts/me", handler.ShowMyPost(), middleware.JWT([]byte(sc.JwtKey)))
+	e.GET("/posts/:id", handler.ShowSpesificPost(), middleware.JWT([]byte(sc.JwtKey)))
+	e.POST("/posts", handler.CreatePost(), middleware.JWT([]byte(sc.JwtKey)))
+	e.PUT("/posts/:id", handler.EditPost(), middleware.JWT([]byte(sc.JwtKey)))
+	e.DELETE("/posts/:id", handler.DeletePost(), middleware.JWT([]byte(sc.JwtKey)))
 }
 
 func (ph *postHandler) ShowAllPost() echo.HandlerFunc {
@@ -40,7 +47,8 @@ func (ph *postHandler) ShowAllPost() echo.HandlerFunc {
 func (ps *postHandler) ShowMyPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		//ID, _ := strconv.Atoi(c.Param("id"))
-		res, rel, err := ps.srv.ShowMy(1)
+		userID := common.ExtractToken(c)
+		res, rel, err := ps.srv.ShowMy(userID)
 		if err != nil {
 			log.Error(err.Error())
 			if strings.Contains(err.Error(), "table") {
@@ -72,6 +80,23 @@ func (ps *postHandler) ShowSpesificPost() echo.HandlerFunc {
 func (ph *postHandler) CreatePost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input PostingFormat
+		userID := common.ExtractToken(c)
+		input.UserID = userID
+
+		errEnv := godotenv.Load("config.env")
+		if errEnv != nil {
+			return c.JSON(http.StatusBadRequest, FailResponse("Error loading .env file"))
+		}
+
+		cfg, errDef := config.LoadDefaultConfig(context.TODO())
+		if errDef != nil {
+			var erroDef string = "Error: "
+			erroDef += erroDef
+			return c.JSON(http.StatusBadRequest, FailResponse(erroDef))
+		}
+
+		client := s3.NewFromConfig(cfg)
+		uploader := manager.NewUploader(client)
 
 		isSuccess := true
 		file, er := c.FormFile("img")
@@ -82,9 +107,18 @@ func (ph *postHandler) CreatePost() echo.HandlerFunc {
 			if err != nil {
 				isSuccess = false
 			} else {
-				fileByte, _ := ioutil.ReadAll(src)
-				input.Images = "public/images/" + strconv.FormatInt(time.Now().Unix(), 10) + ".jpg"
-				ioutil.WriteFile(input.Images, fileByte, 0777)
+				result, errImg := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+					Bucket: aws.String("project-sosmed"),
+					Key:    aws.String(file.Filename),
+					Body:   src,
+					ACL:    "public-read",
+				})
+
+				if errImg != nil {
+					return c.JSON(http.StatusBadRequest, FailResponse("Berhasil Upload Images"))
+				}
+
+				input.Images = result.Location
 			}
 			defer src.Close()
 		}
@@ -109,6 +143,22 @@ func (ph *postHandler) EditPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ID, _ := strconv.Atoi(c.Param("id"))
 		var input PostingFormat
+		userID := common.ExtractToken(c)
+		input.UserID = userID
+		errEnv := godotenv.Load("config.env")
+		if errEnv != nil {
+			return c.JSON(http.StatusBadRequest, FailResponse("Error loading .env file"))
+		}
+
+		cfg, errDef := config.LoadDefaultConfig(context.TODO())
+		if errDef != nil {
+			var erroDef string = "Error: "
+			erroDef += erroDef
+			return c.JSON(http.StatusBadRequest, FailResponse(erroDef))
+		}
+
+		client := s3.NewFromConfig(cfg)
+		uploader := manager.NewUploader(client)
 
 		isSuccess := true
 		file, er := c.FormFile("img")
@@ -119,9 +169,18 @@ func (ph *postHandler) EditPost() echo.HandlerFunc {
 			if err != nil {
 				isSuccess = false
 			} else {
-				fileByte, _ := ioutil.ReadAll(src)
-				input.Images = "public/images/" + strconv.FormatInt(time.Now().Unix(), 10) + ".jpg"
-				ioutil.WriteFile(input.Images, fileByte, 0777)
+				result, errImg := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+					Bucket: aws.String("project-sosmed"),
+					Key:    aws.String(file.Filename),
+					Body:   src,
+					ACL:    "public-read",
+				})
+
+				if errImg != nil {
+					return c.JSON(http.StatusBadRequest, FailResponse("Berhasil Upload Images"))
+				}
+
+				input.Images = result.Location
 			}
 			defer src.Close()
 		}
