@@ -13,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -46,7 +45,6 @@ func (ph *postHandler) ShowAllPost() echo.HandlerFunc {
 
 func (ps *postHandler) ShowMyPost() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		//ID, _ := strconv.Atoi(c.Param("id"))
 		userID := common.ExtractToken(c)
 		res, rel, err := ps.srv.ShowMy(userID)
 		if err != nil {
@@ -82,11 +80,6 @@ func (ph *postHandler) CreatePost() echo.HandlerFunc {
 		var input PostingFormat
 		userID := common.ExtractToken(c)
 		input.UserID = userID
-
-		errEnv := godotenv.Load("config.env")
-		if errEnv != nil {
-			return c.JSON(http.StatusBadRequest, FailResponse("Error loading .env file"))
-		}
 
 		cfg, errDef := config.LoadDefaultConfig(context.TODO())
 		if errDef != nil {
@@ -145,10 +138,6 @@ func (ph *postHandler) EditPost() echo.HandlerFunc {
 		var input PostingFormat
 		userID := common.ExtractToken(c)
 		input.UserID = userID
-		errEnv := godotenv.Load("config.env")
-		if errEnv != nil {
-			return c.JSON(http.StatusBadRequest, FailResponse("Error loading .env file"))
-		}
 
 		cfg, errDef := config.LoadDefaultConfig(context.TODO())
 		if errDef != nil {
