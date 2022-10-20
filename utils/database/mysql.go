@@ -5,6 +5,7 @@ import (
 	"sosmed/config"
 	rc "sosmed/features/comment/repository"
 	rp "sosmed/features/post/repository"
+	ur "sosmed/features/user/repository"
 
 	"github.com/labstack/gommon/log"
 	"gorm.io/driver/mysql"
@@ -31,4 +32,5 @@ func InitDB(c *config.AppConfig) *gorm.DB {
 func MigrateDB(db *gorm.DB) {
 	db.AutoMigrate(&rp.Post{})
 	db.AutoMigrate(&rc.Comment{})
+	db.AutoMigrate(&ur.User{})
 }
