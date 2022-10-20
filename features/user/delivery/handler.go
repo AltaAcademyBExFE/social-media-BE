@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"sosmed/config"
-	"sosmed/features/user/common"
 	"sosmed/features/user/domain"
+	"sosmed/utils/common"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
