@@ -78,7 +78,7 @@ func (uh *userHandler) Deactivate() echo.HandlerFunc {
 
 func (uh *userHandler) ShowByEmail() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		email := c.Param("email")
+		email := c.QueryParam("email")
 		res, err := uh.srv.ShowByEmail(email)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, FailResponse(err.Error()))
