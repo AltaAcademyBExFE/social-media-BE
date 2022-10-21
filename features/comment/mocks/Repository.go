@@ -33,7 +33,7 @@ func (_m *Repository) Insert(newComment domain.Core) (domain.Cores, error) {
 
 	var r0 domain.Cores
 	if rf, ok := ret.Get(0).(func(domain.Core) domain.Cores); ok {
-		r0.Body = newComment.Body
+		r0.Name = "Gerry"
 		r0 = rf(newComment)
 	} else {
 		r0 = ret.Get(0).(domain.Cores)

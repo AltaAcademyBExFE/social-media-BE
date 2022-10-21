@@ -15,20 +15,18 @@ var serviceRepo = CommentService{qry: queryRepo}
 
 func TestCreate(t *testing.T) {
 	repo := new(mockery.Repository)
-	// insertData := dom.Core{Body: "Testing Post.", PostID: 1, UserID: 1}
-	// returnData := dom.Cores{Body: "Testing Post.", Name: "Gerry"}
+	insertData := dom.Core{Body: "Testing Post.", PostID: 1, UserID: 1}
+	returnData := dom.Cores{Body: "Testing Post.", Name: "Gerry"}
 
-	// t.Run("Success", func(t *testing.T) {
-	// 	repo.On("Insert", mock.Anything).Return(returnData, nil).Once()
-	// 	srv := New(repo)
+	t.Run("Success", func(t *testing.T) {
+		repo.On("Insert", mock.Anything).Return(returnData, nil).Once()
+		srv := New(repo)
 
-	// 	res, err := srv.Create(insertData)
-	// 	assert.NoError(t, err)
-	// 	assert.Equal(t, returnData.Body, res.Body)
-	// 	assert.Equal(t, returnData.Name, res.Name)
-	// 	//assert.Equal(t, returnData.CreatedAt, res.CreatedAt)
-	// 	repo.AssertExpectations(t)
-	// })
+		res, err := srv.Create(insertData)
+		assert.NoError(t, err)
+		assert.Equal(t, returnData.Body, res.Body)
+		assert.Equal(t, returnData.Name, res.Name)
+	})
 
 	t.Run("Error insert", func(t *testing.T) {
 		repo.On("Insert", mock.Anything).Return(dom.Cores{}, errors.New("some problem on database")).Once()
@@ -38,8 +36,6 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, "", res.Body)
 		assert.Equal(t, "", res.Name)
 		assert.Error(t, err)
-		// assert.EqualError(t, err, "some problem on database")
-		// repo.AssertExpectations(t)
 	})
 }
 
