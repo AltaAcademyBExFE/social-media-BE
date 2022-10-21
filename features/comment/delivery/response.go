@@ -20,8 +20,8 @@ func FailResponse(msg string) map[string]string {
 
 type Responses struct {
 	Body      string    `json:"body"`
-	Name      string    `json:"user"`
-	CreatedAt time.Time `json:"create"`
+	Name      string    `json:"name_user"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func ToResponse(core interface{}, code string) interface{} {

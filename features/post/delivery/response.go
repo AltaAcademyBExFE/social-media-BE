@@ -19,25 +19,25 @@ func FailResponse(msg string) map[string]string {
 }
 
 type Responses struct {
-	ID        uint        `json:"id"`
+	ID        uint        `json:"id_post"`
 	Body      string      `json:"body"`
-	Images    string      `json:"img"`
-	Name      string      `json:"user"`
-	CreatedAt time.Time   `json:"create"`
+	Images    string      `json:"images/png"`
+	Name      string      `json:"name_user"`
+	CreatedAt time.Time   `json:"created_at"`
 	Comments  []Responser `json:"comments"`
 }
 
 type Response struct {
 	Body      string    `json:"body"`
-	Images    string    `json:"img"`
-	Name      string    `json:"user"`
-	CreatedAt time.Time `json:"create"`
+	Images    string    `json:"images/png"`
+	Name      string    `json:"name_user"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Responser struct {
 	Body      string    `json:"body"`
-	Name      string    `json:"user"`
-	CreatedAt time.Time `json:"create"`
+	Name      string    `json:"name_user"`
+	CreatedAt time.Time `json:"created_at"`
 	PostID    int       `json:"id_post"`
 }
 
