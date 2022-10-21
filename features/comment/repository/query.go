@@ -7,17 +7,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type repoQuery struct {
+type RepoQuery struct {
 	db *gorm.DB
 }
 
 func New(dbConn *gorm.DB) domain.Repository {
-	return &repoQuery{
+	return &RepoQuery{
 		db: dbConn,
 	}
 }
 
-func (rq *repoQuery) Insert(newComment domain.Core) (domain.Cores, error) {
+func (rq *RepoQuery) Insert(newComment domain.Core) (domain.Cores, error) {
 	var resQry CommentIt
 	if err := rq.db.Exec("INSERT INTO comments (id, created_at, updated_at, deleted_at, body, post_id, user_id) values (?,?,?,?,?,?,?)",
 		nil, time.Now(), nil, nil, newComment.Body, newComment.PostID, newComment.UserID).Error; err != nil {
@@ -30,7 +30,7 @@ func (rq *repoQuery) Insert(newComment domain.Core) (domain.Cores, error) {
 	return res, nil
 }
 
-func (rq *repoQuery) Del(ID int) error {
+func (rq *RepoQuery) Del(ID int) error {
 	var resQry Comment
 	if err := rq.db.Where("id = ?", ID).Delete(&resQry).Error; err != nil {
 		return err
