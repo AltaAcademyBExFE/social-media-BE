@@ -29,9 +29,9 @@ After Login
 
 - Base on : [Golang 1.19-alpine3.16](https://go.dev/)
 - ORM Library : [GORM v1.23.8](https://gorm.io/gorm)
-- Database : MySQL (https://www.mysql.com/downloads/)
-- Server : AWS (https://aws.amazon.com)
-- Docker Storage : DockerHub (https://hub.docker.com)
+- Database : [MySQL](https://www.mysql.com/downloads/)
+- Server : [AWS](https://aws.amazon.com)
+- Docker Storage : [DockerHub](https://hub.docker.com)
 
 ## How to test on your local environment
 
