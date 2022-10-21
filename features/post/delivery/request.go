@@ -6,7 +6,7 @@ import (
 
 type PostingFormat struct {
 	Body   string `json:"body" form:"body"`
-	Images string `json:"img" form:"img"`
+	Images string `json:"images/png" form:"images/png"`
 	UserID int    `json:"user" form:"user"`
 }
 
