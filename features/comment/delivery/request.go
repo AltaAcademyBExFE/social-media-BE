@@ -4,7 +4,7 @@ import "sosmed/features/comment/domain"
 
 type CommentFormat struct {
 	Body   string `json:"body" form:"body"`
-	PostID int    `json:"post" form:"post"`
+	PostID int    `json:"id_post" form:"id_post"`
 	UserID int    `json:"user" form:"user"`
 }
 
